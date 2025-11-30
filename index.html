@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Sohbet Silici (Sorumluluk Kullanıcıda)</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input[type="text"], button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background-color: #7289da; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #677bc4; }
+        .warning { color: red; font-weight: bold; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 4px; }
+        #status-message { margin-top: 20px; padding: 10px; border-radius: 4px; background-color: #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Discord Sohbet Silme Aracı</h2>
+        
+        <div class="warning">
+            ⚠️ **ÖNEMLİ UYARI: RİSK KABULÜ** ⚠️<br>
+            Bu Self-Bot aracı Discord kurallarını ihlal eder. **Hesabınızın Kapatılma Riski YÜKSEKTİR.** Girilen hiçbir bilgi kaydedilmez ve **tüm sorumluluk kullanıcıya aittir!** Kullanarak bu riski kabul etmiş sayılırsınız.
+        </div>
+
+        <form id="delete-form">
+            <label for="token">Discord Kullanıcı Tokeniniz:</label>
+            <input type="text" id="token" placeholder="Hesap Tokeninizi Buraya Girin" required>
+
+            <label for="target-id">Sohbeti Silinecek Kullanıcının ID'si:</label>
+            <input type="text" id="target-id" placeholder="Kullanıcı ID'sini Buraya Girin" required>
+
+            <button type="submit" id="start-button">Silme İşlemini Başlat!</button>
+        </form>
+
+        <p id="status-message">Hazır.</p>
+    </div>
+
+    <script>
+        document.getElementById('delete-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const token = document.getElementById('token').value;
+            const targetId = document.getElementById('target-id').value;
+            const statusMessage = document.getElementById('status-message');
+            
+            // ❌ API URL'sini BURAYA EKLE: Render'da barındıracağın Python sunucusunun URL'si
+            const apiUrl = 'https://SENIN-RENDER-API-ADRESIN.onrender.com/delete_messages'; // Örnek adres
+            
+            statusMessage.textContent = 'İşlem başlatılıyor... Lütfen bekleyin.';
+            statusMessage.style.backgroundColor = '#fffacd'; // Hafif sarı
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token, target_id: targetId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusMessage.textContent = `✅ Başarılı: ${data.message}`;
+                    statusMessage.style.backgroundColor = '#d4edda'; // Yeşil
+                } else {
+                    statusMessage.textContent = `❌ Hata: ${data.error || 'Bilinmeyen bir hata oluştu.'}`;
+                    statusMessage.style.backgroundColor = '#f8d7da'; // Kırmızı
+                }
+
+            } catch (error) {
+                statusMessage.textContent = `❌ Bağlantı Hatası: Sunucuya ulaşılamadı. ${error.message}`;
+                statusMessage.style.backgroundColor = '#f8d7da';
+            }
+        });
+    </script>
+</body>
+</html>
